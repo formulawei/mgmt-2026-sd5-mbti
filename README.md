@@ -17,7 +17,7 @@
 ## 目前部署狀態（2026-10-20）
 
 - 學生網址：https://formulawei.github.io/mgmt-2026-sd5-mbti/
-- GAS 後台：綁定於 Google 試算表「MGMT2026_SD5_MBTI」，Apps Script 專案「MGMT2026_SD5_MBTI_Backend」，部署版本 1（SD5 v1）。
+- GAS 後台：綁定於 Google 試算表「MGMT2026_SD5_MBTI」，Apps Script 專案「MGMT2026_SD5_MBTI_Backend」，網頁應用程式部署「SD5 v1」，目前為第 2 版。
 - 老師後台網址含金鑰，不放在本 repo；請從試算表選單「SD5 後台 → 顯示後台網址與金鑰」取得。
 
 ## 計分規則（SD5 第 3 頁）
@@ -36,7 +36,7 @@
    - 學生端收件網址（`…/exec`）：貼到 `index.html` 的 `const GAS_URL = "";`。
    - 老師後台網址（`…/exec?key=…`）：只給老師與助教，投影時可按「公佈模式」隱藏名單與組別。
 
-之後修改 Code.gs 時，請用「管理部署作業 → 編輯 → 新版本」更新同一個部署，網址才不會改變。
+之後修改 Code.gs 時，請用「管理部署作業 → 編輯 → 新版本」更新同一個部署，網址才不會改變。若重新建立部署，請同步更新 `Code.gs` 的 `CFG.WEBAPP_URL` 與 `index.html` 的 `GAS_URL`。
 
 ### 二、學生端放上 GitHub Pages
 
