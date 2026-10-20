@@ -12,7 +12,9 @@ const CFG = {
   SHEET_RESP: 'Responses',
   SHEET_HIST: 'History',
   SHEET_SUM: 'Summary',
-  TZ: 'Asia/Taipei'
+  TZ: 'Asia/Taipei',
+  // 正式部署網址（部署 → 管理部署作業 → 網頁應用程式 URL）。在試算表選單中 ScriptApp.getService().getUrl() 會回傳無法使用的網址，因此直接記錄。
+  WEBAPP_URL: 'https://script.google.com/macros/s/AKfycbzlgdoCLRZFnyo_o8veJ15KXz2_kJaX6NmCVdaUC-FrrHRXb3D3DizGW2e26o-agmzrig/exec'
 };
 
 const TYPE_ORDER = [
@@ -121,7 +123,7 @@ function adminKey_() {
 }
 
 function showAdminInfo() {
-  const url = ScriptApp.getService().getUrl();
+  const url = CFG.WEBAPP_URL || ScriptApp.getService().getUrl();
   const key = adminKey_();
   const msg = url
     ? '學生端收件網址（貼到 index.html 的 GAS_URL）：\n' + url + '\n\n老師後台（請勿外流）：\n' + url + '?key=' + key
