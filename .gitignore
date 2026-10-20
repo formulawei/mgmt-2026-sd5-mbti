@@ -1,0 +1,3 @@
+node_modules/
+tests/shots/
+tests/mock_data.json

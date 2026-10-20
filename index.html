@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="臺大管理學 2026 SD5 人格特質自我診斷：把紙本 32 題的勾選轉換成 MBTI 四項結果。">
+<title>SD5 人格特質自我診斷｜管理學 2026</title>
+<style>
+:root{
+  color-scheme:light;
+  --navy:#002B5C;--navy-700:#0B3A75;--navy-300:#7F95B5;--navy-100:#E1E8F2;--navy-50:#F2F5FA;
+  --gold:#C9A227;--gold-700:#8A6D0F;--gold-100:#F8F0D0;
+  --bg:#EDF0F5;--surface:#FFFFFF;--ink:#12203A;--ink-2:#414E68;--muted:#667189;
+  --line:#D2D9E5;--line-2:#E7EBF2;
+  --ok:#1C7446;--ok-50:#E8F4EC;--bad:#B3261E;--bad-50:#FCEEEC;
+  --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 var(--font);-webkit-text-size-adjust:100%}
+button,input,select{font:inherit;color:inherit}
+h1,h2,h3,p,ul,ol{margin:0}
+.top{background:var(--navy);color:#fff}
+.top .in{max-width:980px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.top .badge{background:var(--gold);color:var(--navy);font-weight:700;border-radius:6px;padding:2px 10px;font-size:15px}
+.top .t{font-weight:600;font-size:17px}
+.top .c{margin-left:auto;font-size:14px;opacity:.85}
+main{max-width:980px;margin:0 auto;padding:20px 16px 64px}
+h1{font-size:clamp(26px,3.4vw,36px);line-height:1.3;color:var(--navy);margin:6px 0 10px}
+h2{font-size:22px;line-height:1.4;color:var(--navy);margin:0 0 8px}
+.lead{color:var(--ink-2);max-width:46em}
+.steps{display:flex;gap:6px;margin:20px 0 16px;padding:0;list-style:none;flex-wrap:wrap}
+.steps li{flex:1 1 140px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:15px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.steps li b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--navy-100);color:var(--navy);font-size:13px;flex:none}
+.steps li.now{border-color:var(--navy);color:var(--navy);font-weight:600}
+.steps li.now b{background:var(--navy);color:#fff}
+.steps li.done b{background:var(--gold);color:var(--navy)}
+.card{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--navy);border-radius:10px;padding:22px 22px 24px;margin-bottom:18px}
+.field{display:grid;gap:4px;margin-bottom:14px}
+.field label{font-weight:600;color:var(--navy);font-size:15px}
+.field input{border:1px solid var(--navy-300);border-radius:6px;padding:9px 12px;background:#fff;width:100%;max-width:360px}
+.field input:focus{outline:2px solid var(--gold);outline-offset:1px}
+.field .hint{font-size:14px;color:var(--muted)}
+.field.err input{border-color:var(--bad);background:var(--bad-50)}
+.field .msg{font-size:14px;color:var(--bad);min-height:1em}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 18px}
+@media (max-width:720px){.row3{grid-template-columns:1fr}}
+.btn{cursor:pointer;border:1px solid var(--navy-300);background:var(--surface);color:var(--navy);border-radius:6px;padding:9px 16px;font-weight:500}
+.btn:hover:not(:disabled){border-color:var(--navy);background:var(--navy-50)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:600;padding:11px 22px}
+.btn.primary:hover:not(:disabled){background:var(--navy-700)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:18px}
+.progress{display:flex;align-items:center;gap:12px;margin:6px 0 14px;font-size:15px;color:var(--ink-2)}
+.progress .bar{flex:1;height:10px;background:var(--navy-100);border-radius:5px;overflow:hidden;max-width:360px}
+.progress .bar i{display:block;height:100%;background:var(--navy);width:0;transition:width .25s}
+.qgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:820px){.qgrid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:420px){.qgrid{grid-template-columns:1fr}}
+.q{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:8px;padding:6px 8px 6px 12px;background:#fff}
+.q.miss{border-color:var(--bad);background:var(--bad-50)}
+.q .n{font-weight:700;color:var(--navy);min-width:3.2em}
+.q .ab{display:flex;gap:6px}
+.q .ab button{width:44px;height:36px;border-radius:999px;border:1px solid var(--navy-300);background:#fff;color:var(--navy);cursor:pointer;font-weight:600}
+.q .ab button:hover{background:var(--navy-50)}
+.q .ab button[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:#fff}
+.q .ab button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+details.quick{margin:4px 0 16px;background:var(--navy-50);border-radius:8px;padding:10px 14px}
+details.quick summary{cursor:pointer;font-weight:600;color:var(--navy-700)}
+details.quick input{width:100%;font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.12em;border:1px solid var(--navy-300);border-radius:6px;padding:8px 10px;margin-top:8px;background:#fff}
+.note{font-size:15px;color:var(--ink-2);background:var(--gold-100);border-left:4px solid var(--gold);border-radius:6px;padding:10px 14px}
+.note.bad{background:var(--bad-50);border-left-color:var(--bad);color:var(--bad)}
+.note.ok{background:var(--ok-50);border-left-color:var(--ok);color:var(--ok)}
+.review{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin:12px 0;font-variant-numeric:tabular-nums}
+@media (max-width:640px){.review{grid-template-columns:repeat(4,1fr)}}
+.review span{background:var(--navy-50);border-radius:4px;padding:4px 6px;text-align:center;font-size:15px}
+.review span b{color:var(--navy)}
+.who{display:flex;gap:18px;flex-wrap:wrap;font-size:15px;color:var(--ink-2);margin-bottom:6px}
+.who b{color:var(--navy)}
+.check{display:flex;gap:10px;align-items:flex-start;margin-top:10px}
+.check input{width:20px;height:20px;margin-top:5px;accent-color:var(--navy);flex:none}
+.hero{background:var(--navy);color:#fff;border-radius:12px;padding:22px;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;margin-bottom:18px}
+@media (max-width:640px){.hero{grid-template-columns:1fr}}
+.hero .type{display:flex;gap:8px}
+.hero .type span{width:64px;height:76px;border-radius:10px;background:#fff;color:var(--navy);display:grid;place-items:center;font-size:44px;font-weight:800}
+.hero .type span:nth-child(odd){background:var(--gold)}
+.hero .lbl{font-size:15px;opacity:.85}
+.hero .name{font-size:22px;font-weight:700;margin:2px 0 6px}
+.hero p{font-size:16px;line-height:1.8}
+.dims{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media (max-width:720px){.dims{grid-template-columns:1fr}}
+.dim{border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.dim h3{font-size:16px;color:var(--navy);margin-bottom:8px}
+.dim .split{display:flex;justify-content:space-between;font-size:15px;color:var(--ink-2)}
+.dim .split b{font-size:20px;color:var(--ink)}
+.dim .split .win b{color:var(--navy)}
+.dim .meter{display:flex;gap:2px;height:14px;margin:6px 0 10px}
+.dim .meter i{flex:1;border-radius:3px;background:var(--line-2)}
+.dim .meter i.l{background:var(--navy)}
+.dim .meter i.r{background:var(--gold)}
+.dim table{width:100%;border-collapse:collapse;font-size:14px;text-align:center}
+.dim th{color:var(--navy);font-weight:600;padding:2px 0;border-bottom:1px solid var(--line)}
+.dim td{padding:2px 0;color:var(--muted)}
+.dim td.hit{color:var(--navy);font-weight:700}
+.dim td.hit span{display:inline-block;border:2px solid var(--gold);border-radius:999px;padding:0 8px}
+.dim .tie{font-size:14px;color:var(--gold-700);margin-top:8px}
+.paper{margin-top:12px}
+footer{max-width:980px;margin:0 auto;padding:0 16px 40px;font-size:14px;color:var(--muted)}
+[hidden]{display:none!important}
+@media print{.top,.steps,.actions,footer{display:none}body{background:#fff}.card{border:1px solid #999}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <span class="badge">SD5</span><span class="t">人格特質自我診斷</span><span class="c">管理學｜Fall 2026</span>
+</div></header>
+
+<main>
+  <h1>把紙本 32 題轉換成你的 MBTI 四項結果</h1>
+  <p class="lead">請拿出上週填好的 32 題題本，依序輸入每一題勾選的 a 或 b。全部填完並送出後，系統才會依 SD5 的轉換表算出四項結果與解讀。</p>
+
+  <ol class="steps" id="steps">
+    <li data-s="1"><b>1</b>基本資料</li>
+    <li data-s="2"><b>2</b>輸入 32 題</li>
+    <li data-s="3"><b>3</b>核對送出</li>
+    <li data-s="4"><b>4</b>查看結果</li>
+  </ol>
+
+  <!-- Step 1 -->
+  <section class="card" id="s1">
+    <h2>基本資料</h2>
+    <p class="lead" style="margin-bottom:14px">與紙本 SD5 上方欄位相同。學號用來辨識同一位同學，重複送出時以最後一次為準。</p>
+    <div class="row3">
+      <div class="field" id="f-group"><label for="group">組別</label><input id="group" inputmode="numeric" autocomplete="off" placeholder="例：3" maxlength="10"><span class="msg"></span></div>
+      <div class="field" id="f-name"><label for="name">姓名</label><input id="name" autocomplete="name" maxlength="40"><span class="msg"></span></div>
+      <div class="field" id="f-sid"><label for="sid">學號</label><input id="sid" autocomplete="off" placeholder="例：B14705001" maxlength="12"><span class="msg"></span></div>
+    </div>
+    <div class="actions"><button class="btn primary" id="to2">下一步：輸入 32 題</button></div>
+  </section>
+
+  <!-- Step 2 -->
+  <section class="card" id="s2" hidden>
+    <h2>輸入 32 題的勾選</h2>
+    <div class="progress"><span id="cnt">已填 0 / 32 題</span><span class="bar"><i id="pbar"></i></span></div>
+    <details class="quick">
+      <summary>快速輸入：一次打完 32 個字母</summary>
+      <p style="font-size:15px;color:var(--ink-2);margin-top:6px">從第 1 題依序輸入 a 或 b，空白與逗號會自動略過。輸入後請在下方逐題核對。</p>
+      <input id="quick" maxlength="80" placeholder="abbaab…" autocomplete="off" spellcheck="false" aria-label="快速輸入 32 題答案">
+    </details>
+    <div class="qgrid" id="qgrid"></div>
+    <p class="note bad" id="missMsg" hidden></p>
+    <div class="actions">
+      <button class="btn" id="back1">上一步</button>
+      <button class="btn primary" id="to3">下一步：核對</button>
+    </div>
+  </section>
+
+  <!-- Step 3 -->
+  <section class="card" id="s3" hidden>
+    <h2>對照紙本再核對一次</h2>
+    <div class="who" id="who"></div>
+    <div class="review" id="review"></div>
+    <label class="check"><input type="checkbox" id="ok"><span>我已對照紙本題本，32 題的 a、b 都與我上週的勾選相同。</span></label>
+    <p class="note bad" id="sendErr" hidden></p>
+    <div class="actions">
+      <button class="btn" id="back2">回去修改</button>
+      <button class="btn primary" id="send" disabled>送出並查看結果</button>
+      <button class="btn" id="showAnyway" hidden>先看結果，稍後再送出</button>
+    </div>
+  </section>
+
+  <!-- Step 4 -->
+  <section id="s4" hidden>
+    <p class="note" id="pending" hidden></p>
+    <div class="hero">
+      <div class="type" id="typeBox" aria-label="四項結果"></div>
+      <div>
+        <div class="lbl" id="typeLbl"></div>
+        <div class="name" id="typeName"></div>
+        <p id="typeDesc"></p>
+      </div>
+    </div>
+    <section class="card">
+      <h2>四個構面的轉換過程</h2>
+      <p class="lead" style="margin-bottom:14px">圈起來的是你的選項，和紙本 SD5 第 3 頁的轉換表相同。請把四項結果填到紙本學號旁的欄位。</p>
+      <div class="dims" id="dims"></div>
+    </section>
+    <div class="actions">
+      <button class="btn" id="print">列印這一頁</button>
+      <button class="btn" id="restart">重新填寫</button>
+    </div>
+  </section>
+</main>
+<footer>本頁只顯示你個人的結果。資料由授課教師彙整，班級結果會在課堂上公佈。MBTI 是自我探索的工具，結果會隨情境與時間改變，不代表能力高低。</footer>
+
+<script>
+/* ===== 設定：部署 GAS 後，把網址貼在這裡（也可用 ?api=網址 暫時覆寫） ===== */
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzlgdoCLRZFnyo_o8veJ15KXz2_kJaX6NmCVdaUC-FrrHRXb3D3DizGW2e26o-agmzrig/exec";
+
+/* ===== SD5 轉換表（MGMT / Fall 2026，第 3 頁） ===== */
+const DIMENSIONS = [
+  {key:"IE", L:"I", R:"E", Lname:"內向 Introversion", Rname:"外向 Extroversion", tieQ:11,
+   L_items:[[2,"a"],[6,"a"],[11,"a"],[15,"b"],[19,"b"],[22,"a"],[27,"b"],[32,"b"]],
+   R_items:[[2,"b"],[6,"b"],[11,"b"],[15,"a"],[19,"a"],[22,"b"],[27,"a"],[32,"a"]]},
+  {key:"SN", L:"S", R:"N", Lname:"實感 Sensing", Rname:"直覺 Intuition", tieQ:16,
+   L_items:[[1,"b"],[10,"b"],[13,"a"],[16,"a"],[17,"a"],[21,"a"],[28,"b"],[30,"b"]],
+   R_items:[[1,"a"],[10,"a"],[13,"b"],[16,"b"],[17,"b"],[21,"b"],[28,"a"],[30,"a"]]},
+  {key:"TF", L:"T", R:"F", Lname:"思考 Thinking", Rname:"情感 Feeling", tieQ:24,
+   L_items:[[3,"a"],[5,"a"],[12,"a"],[14,"b"],[20,"a"],[24,"b"],[25,"a"],[29,"b"]],
+   R_items:[[3,"b"],[5,"b"],[12,"b"],[14,"a"],[20,"b"],[24,"a"],[25,"b"],[29,"a"]]},
+  {key:"JP", L:"J", R:"P", Lname:"判斷 Judging", Rname:"知覺 Perceiving", tieQ:23,
+   L_items:[[4,"a"],[7,"a"],[8,"b"],[9,"a"],[18,"b"],[23,"b"],[26,"a"],[31,"a"]],
+   R_items:[[4,"b"],[7,"b"],[8,"a"],[9,"b"],[18,"a"],[23,"a"],[26,"b"],[31,"b"]]}
+];
+
+/* 計分：answers 為長度 32 的陣列，值為 "a" 或 "b"。與 GAS 端 scoreSD5 相同。 */
+function scoreSD5(answers){
+  if(!Array.isArray(answers)||answers.length!==32||answers.some(x=>x!=="a"&&x!=="b")) throw new Error("需要 32 題 a/b 答案");
+  const dims = DIMENSIONS.map(d=>{
+    const count=(items,skip)=>items.filter(([q,opt])=>q!==skip&&answers[q-1]===opt).length;
+    const l=count(d.L_items), r=count(d.R_items);
+    let pick, tie=false, lAdj=l, rAdj=r;
+    if(l!==r){ pick = l>r ? d.L : d.R; }
+    else { tie=true; lAdj=count(d.L_items,d.tieQ); rAdj=count(d.R_items,d.tieQ); pick = lAdj>rAdj ? d.L : d.R; }
+    return {key:d.key, L:d.L, R:d.R, l, r, tie, lAdj, rAdj, pick};
+  });
+  return {type:dims.map(x=>x.pick).join(""), dims};
+}
+
+/* ===== 16 型解讀（SD5 第 4 頁） ===== */
+const TYPES = {
+ISTJ:"具備沉靜、認真、貫徹始終與值得信賴的特質。凡事講求實際、實事求是並且有責任感。能夠邏輯性的規劃須完成的任務，並可免於干擾而逐步完成工作。樂於有條有理地處理工作、家庭或生活上的各項事務。重視傳統與忠誠。",
+ISFJ:"特質為沉靜、友善、謹慎而負責，能夠堅定不移地履行義務。做事貫徹始終、不辭辛勞而且準確無誤。忠誠而細心，會特別留意並記住重要人物的小細節。顧慮他人的感受，無論在工作或家庭生活，皆努力創造有秩序而和諧的環境。",
+INFJ:"會探求人際關係、想法及實物權之間的意義及關連性。希望找出激發他人的動力，並能洞悉別人的想法。謹慎的遵循並履行自我的價值觀。對於如何盡力取得群體獲益，有清楚的理念。能夠有條理、果斷地實踐理念。",
+INTJ:"思維具有原創性，也有衝勁去實踐想法以達成目標。能夠很快地看出事件的型態，並建立寬廣的論點。一旦承諾，便會有條理地工作至完成為止。見解獨立不會盡信於他人，才能與表現皆具有高度的水準。",
+ISTP:"靈活有彈性、沉靜而包容的觀察者。當問題出現時，會迅速行動以找出可行的解決方案。能夠解析使工作順利進行的要素，也能由大量資料找出實際問題的核心。對前因後果很有興趣，並能邏輯性的組織事實，重視效率。",
+ISFP:"屬於沉靜、友善、敏感而仁慈的類型。享受當下周遭事物營造的氛圍。喜歡依自己所設定的時間表與空間做事。對於個人的價值觀及重要人物，會維持忠誠並信守承諾。不喜歡意見紛歧和衝突，不會強迫他人接受自己的看法或價值觀。",
+INFP:"理想主義、忠於自己的價值觀和重要人物。希望外在的生活周遭與內在的個人價值相協調一致。有好奇心，能很快地找出各種可能，催化想法的實踐。試圖了解並協助他人發揮潛能。適應力強、靈活有彈性；在不抵觸自我價值的前提下均可接納。",
+INTP:"尋求邏輯性的解釋有趣的事物，喜歡理論和抽象思考，勝於社交性的互動。沉靜、滿足、靈活有彈性、適應力強。針對感興趣的領域，具備非凡的能力設法專注而深刻地解決問題。屬於分析型，他人意見不會照單全收，有時還會批判對方。",
+ESTP:"特質為包容、靈活有彈性、自然而然，專心於即時效果並且以整體規劃的方式進行。厭倦理論和概念性的解釋，卻能以充滿活力的行動來解決問題，若透過實踐去學習效果最好。專注於每個當下，喜歡活躍地與他人互動時的感覺，享受於物質帶來的舒適與生活方式。",
+ESFP:"具有外向、友善與接納他人的特質。熱愛生命、人與物質享受，喜歡與他人共事。能運用常識與實事求是的方法工作，並使工作有趣。靈活有彈性、自然而然，易於適應新環境及陌生人。與他人一同學習新技能可達到最佳效果。",
+ENFP:"非常熱情並富有想像力，認為生活充滿著多種可能性。能迅速地看出事件與資訊的關聯性，並且自信地以觀察到的脈絡持續前進。需要他人給予較多的肯定，也樂於欣賞和支持別人。靈活有彈性、自然而然，常仰仗流暢的表達力和臨場的即興表現。",
+ENTP:"坦率而機警、思緒敏捷，能隨機應變地解決富挑戰性的新問題。擅於概念性的創造各種方案，再進一步策略性的分析這些方案。能讀出他人的心思，對於例規不感興趣。少以相同方式處理同類事務，傾向轉移注意到下一個更新的事物上。",
+ESTJ:"講求實際、實事求是，迅速果斷的朝向執行決策。能組織專案與人員完成工作，專注以最有效率的方式得到結果。關心例行的細節，有清楚的邏輯標準。不僅有系統地依此標準執行，同時也希望他人照做，會以強硬的態度實行計畫。",
+ESFJ:"屬於充滿愛心、合作、謹慎盡責的類型。有決心去營造和諧的環境，喜歡與他人共同正確而準時地完成任務。即使是小事也忠於信念，注意到他人在日常生活中的需要並試著協助。渴望別人讚賞他們的貢獻和個人特質。",
+ENFJ:"溫暖熱情、容易感動而負責。善解他人的情緒、需要和動機，不但能找出也願意幫助別人發揮潛能，可以催化個人與團體的成長。忠於信念，對讚美或批評都有回應。於團體中善於社交能惠及他人，具備激發他人的領導能力。",
+ENTJ:"誠實果斷，覺得自己具備領導能力。能迅速的看出不合邏輯、缺乏效率的程序及政策，以及發展、執行系統化的制度，解決組織的問題。喜歡長期規畫和設定目標，博學多聞、樂於延伸並傳遞知識，會強力地提出個人見解。"
+};
+const LETTER = {I:"內向型",E:"外向型",S:"意會型",N:"直覺型",T:"思考",F:"情感",J:"判斷",P:"知覺"};
+
+/* ===== 介面 ===== */
+const $ = s=>document.querySelector(s);
+const STORE = "sd5-mgmt-2026";
+const state = {group:"",name:"",sid:"",answers:Array(32).fill(null),submitted:false,result:null};
+function save(){try{localStorage.setItem(STORE,JSON.stringify(state))}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem(STORE)||"null"); if(s&&Array.isArray(s.answers)&&s.answers.length===32) Object.assign(state,s);}catch(e){}}
+function apiUrl(){try{const u=new URLSearchParams(location.search).get("api"); if(u&&/^https:\/\/script\.google(usercontent)?\.com\//.test(u)) return u;}catch(e){} return GAS_URL;}
+
+function go(n){
+  [1,2,3].forEach(i=>$("#s"+i).hidden = i!==n);
+  $("#s4").hidden = n!==4;
+  document.querySelectorAll("#steps li").forEach(li=>{
+    const s=+li.dataset.s; li.className = s===n?"now":(s<n?"done":"");
+  });
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* Step 1 */
+function validate1(){
+  let ok=true;
+  const set=(id,msg)=>{const f=$("#f-"+id); f.classList.toggle("err",!!msg); f.querySelector(".msg").textContent=msg||""; if(msg) ok=false;};
+  const g=$("#group").value.trim(), n=$("#name").value.trim(), s=$("#sid").value.trim().toUpperCase();
+  set("group", g?"":"請填組別");
+  set("name", n?"":"請填姓名");
+  set("sid", !s?"請填學號":(/^[A-Z0-9]{6,12}$/.test(s)?"":"學號只能包含英文字母與數字"));
+  if(ok){state.group=g;state.name=n;state.sid=s;$("#sid").value=s;save();}
+  return ok;
+}
+$("#to2").onclick=()=>{ if(validate1()) go(2); };
+
+/* Step 2 */
+const grid=$("#qgrid");
+for(let i=1;i<=32;i++){
+  const d=document.createElement("div"); d.className="q"; d.id="q"+i;
+  d.innerHTML=`<span class="n">第 ${i} 題</span><span class="ab" role="group" aria-label="第 ${i} 題">
+    <button type="button" data-q="${i}" data-v="a" aria-pressed="false">a</button>
+    <button type="button" data-q="${i}" data-v="b" aria-pressed="false">b</button></span>`;
+  grid.appendChild(d);
+}
+grid.addEventListener("click",e=>{
+  const b=e.target.closest("button[data-q]"); if(!b) return;
+  setAns(+b.dataset.q,b.dataset.v); refresh2();
+  if(state.answers.filter(Boolean).length<32){ // 自動跳到下一題
+    const nxt=grid.querySelector(`#q${Math.min(32,+b.dataset.q+1)} button`); if(nxt) nxt.focus({preventScroll:true});
+  }
+});
+grid.addEventListener("keydown",e=>{
+  const b=e.target.closest("button[data-q]"); if(!b) return;
+  const k=e.key.toLowerCase(); if(k==="a"||k==="b"){e.preventDefault(); setAns(+b.dataset.q,k); refresh2();
+    const nxt=grid.querySelector(`#q${Math.min(32,+b.dataset.q+1)} button`); if(nxt) nxt.focus();}
+});
+function setAns(q,v){
+  if(state.submitted) unsubmit();
+  state.answers[q-1]=v; save();
+}
+function unsubmit(){state.submitted=false;state.result=null;save();}
+$("#quick").addEventListener("input",e=>{
+  const letters=e.target.value.toLowerCase().replace(/[\s,，、.;；]/g,"");
+  const bad=/[^ab]/.test(letters);
+  const arr=letters.replace(/[^ab]/g,"").slice(0,32).split("");
+  if(state.submitted) unsubmit();
+  for(let i=0;i<32;i++) state.answers[i]=arr[i]||null;
+  save(); refresh2();
+  $("#missMsg").hidden=!bad; if(bad) $("#missMsg").textContent="快速輸入只接受 a 或 b，其他字元已略過。";
+});
+function refresh2(markMissing){
+  const n=state.answers.filter(Boolean).length;
+  $("#cnt").textContent=`已填 ${n} / 32 題`; $("#pbar").style.width=(n/32*100)+"%";
+  for(let i=1;i<=32;i++){
+    const v=state.answers[i-1], q=$("#q"+i);
+    q.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.v===v)));
+    q.classList.toggle("miss", !!markMissing && !v);
+  }
+}
+$("#back1").onclick=()=>go(1);
+$("#to3").onclick=()=>{
+  const miss=[]; state.answers.forEach((v,i)=>{if(!v) miss.push(i+1)});
+  if(miss.length){ refresh2(true); const m=$("#missMsg"); m.hidden=false;
+    m.textContent=`還有 ${miss.length} 題沒填：第 ${miss.join("、")} 題。全部填完才能查看結果。`;
+    $("#q"+miss[0]).scrollIntoView({behavior:"smooth",block:"center"}); return; }
+  $("#missMsg").hidden=true; buildReview(); go(3);
+};
+
+/* Step 3 */
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function buildReview(){
+  $("#who").innerHTML=`<span>組別 <b>${esc(state.group)}</b></span><span>姓名 <b>${esc(state.name)}</b></span><span>學號 <b>${esc(state.sid)}</b></span>`;
+  $("#review").innerHTML=state.answers.map((v,i)=>`<span>${i+1}．<b>${v}</b></span>`).join("");
+  $("#ok").checked=false; $("#send").disabled=true; $("#sendErr").hidden=true; $("#showAnyway").hidden=true;
+}
+$("#ok").onchange=e=>{$("#send").disabled=!e.target.checked};
+$("#back2").onclick=()=>go(2);
+
+async function submit(){
+  const url=apiUrl();
+  if(!url) throw new Error("尚未設定收件網址");
+  const payload={action:"submit",group:state.group,name:state.name,sid:state.sid,answers:state.answers.join(""),client:"sd5-web-1"};
+  const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),20000);
+  try{
+    const res=await fetch(url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload),signal:ctrl.signal});
+    const j=await res.json();
+    if(!j.ok) throw new Error(j.error||"伺服器拒絕");
+    if(j.type && j.type!==state.result.type) throw new Error("伺服器計算結果不一致，請通知助教");
+    return j;
+  } finally { clearTimeout(t); }
+}
+$("#send").onclick=async()=>{
+  const btn=$("#send"); btn.disabled=true; btn.textContent="送出中…"; $("#sendErr").hidden=true;
+  state.result=scoreSD5(state.answers);
+  try{ await submit(); state.submitted=true; save(); showResult(); }
+  catch(err){
+    const m=$("#sendErr"); m.hidden=false;
+    m.textContent=`送出失敗（${err.name==="AbortError"?"連線逾時":err.message}）。請確認網路後再按一次「送出」；若持續失敗，可先查看結果，之後回到本頁會提醒你補送。`;
+    $("#showAnyway").hidden=false;
+  } finally { btn.disabled=!$("#ok").checked; btn.textContent="送出並查看結果"; }
+};
+$("#showAnyway").onclick=()=>{ state.result=scoreSD5(state.answers); save(); showResult(); };
+
+/* Step 4 */
+function showResult(){
+  const r=state.result||scoreSD5(state.answers); state.result=r;
+  const p=$("#pending");
+  if(!state.submitted){ p.hidden=false; p.className="note bad";
+    p.innerHTML=`你的結果<b>尚未送出</b>，老師的班級統計不會納入。<button class="btn" id="retry" style="margin-left:8px">再試一次送出</button>`;
+    $("#retry").onclick=async e=>{ e.target.disabled=true; e.target.textContent="送出中…";
+      try{ await submit(); state.submitted=true; save(); showResult(); }
+      catch(err){ e.target.disabled=false; e.target.textContent="再試一次送出"; alertInline(err); } };
+  } else { p.hidden=false; p.className="note ok"; p.textContent="已送出，班級統計會納入你的結果。"; }
+  $("#typeBox").innerHTML=r.type.split("").map(c=>`<span>${c}</span>`).join("");
+  $("#typeLbl").textContent=r.type.split("").map(c=>LETTER[c]).join("・");
+  $("#typeName").textContent=`${r.type}｜${esc(state.name)}（${esc(state.sid)}）`;
+  $("#typeDesc").textContent=TYPES[r.type];
+  $("#dims").innerHTML=r.dims.map((d,k)=>{
+    const D=DIMENSIONS[k];
+    const cell=(q,opt)=>state.answers[q-1]===opt?`<td class="hit"><span>${q} ${opt}</span></td>`:`<td>${q} ${opt}</td>`;
+    const rows=D.L_items.map((it,i)=>`<tr>${cell(...it)}${cell(...D.R_items[i])}</tr>`).join("");
+    const meter=Array.from({length:8},(_,i)=>`<i class="${i<d.l?"l":""}"></i>`).join("")+`<i style="flex:.3;background:none"></i>`+Array.from({length:8},(_,i)=>`<i class="${i>=8-d.r?"r":""}"></i>`).join("");
+    const tie=d.tie?`<div class="tie">兩欄同為 ${d.l} 分。依規則不計入第 ${D.tieQ} 題後為 ${d.L} ${d.lAdj}：${d.R} ${d.rAdj}，取 ${d.pick}。</div>`:"";
+    return `<div class="dim"><h3>${D.Lname} ／ ${D.Rname}</h3>
+      <div class="split"><span class="${d.pick===d.L?"win":""}">${d.L} <b>${d.l}</b></span><span>結果 <b style="color:var(--navy)">${d.pick}</b></span><span class="${d.pick===d.R?"win":""}"><b>${d.r}</b> ${d.R}</span></div>
+      <div class="meter" aria-hidden="true">${meter}</div>
+      <table><thead><tr><th>${d.L}</th><th>${d.R}</th></tr></thead><tbody>${rows}</tbody></table>${tie}</div>`;
+  }).join("");
+  go(4);
+}
+function alertInline(err){const p=$("#pending"); p.insertAdjacentHTML("beforeend",`<div style="margin-top:6px">仍未成功：${esc(err.message)}</div>`);}
+$("#print").onclick=()=>window.print();
+$("#restart").onclick=()=>{ unsubmit(); $("#quick").value=""; refresh2(); go(2); };
+
+/* 初始化 */
+load();
+$("#group").value=state.group; $("#name").value=state.name; $("#sid").value=state.sid;
+refresh2();
+if(state.result && state.answers.every(Boolean)) showResult(); else go(1);
+</script>
+</body>
+</html>
