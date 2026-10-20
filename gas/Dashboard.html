@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SD5 班級彙整</title>
+<style>
+:root{
+  color-scheme:light;
+  --navy:#002B5C;--navy-700:#0B3A75;--navy-300:#7F95B5;--navy-100:#E1E8F2;--navy-50:#F2F5FA;
+  --gold:#C9A227;--gold-700:#8A6D0F;--gold-100:#F8F0D0;
+  --bg:#EDF0F5;--surface:#FFFFFF;--ink:#12203A;--ink-2:#414E68;--muted:#667189;--line:#D2D9E5;--line-2:#E7EBF2;
+  --series-1:#2a78d6;
+  --seq-1:#cde2fb;--seq-2:#9ec5f4;--seq-3:#6da7ec;--seq-4:#3987e5;--seq-5:#256abf;--seq-6:#184f95;--seq-7:#0d366b;
+  --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--font)}
+button{font:inherit;cursor:pointer}
+h1,h2,h3,p{margin:0}
+.top{background:var(--navy);color:#fff;padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.top .badge{background:var(--gold);color:var(--navy);font-weight:700;border-radius:6px;padding:1px 10px;font-size:14px}
+.top .t{font-weight:600}
+.top .meta{font-size:14px;opacity:.85}
+.top .sp{flex:1}
+.top button{background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:5px 12px;font-size:14px}
+.top button:hover{background:rgba(255,255,255,.12)}
+.top button[aria-pressed=true]{background:var(--gold);color:var(--navy);border-color:var(--gold);font-weight:600}
+main{max-width:1180px;margin:0 auto;padding:18px 20px 48px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:16px}
+.card h2{font-size:19px;color:var(--navy);margin-bottom:4px}
+.card .sub{font-size:14px;color:var(--muted);margin-bottom:14px}
+.kpis{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:16px;margin-bottom:16px}
+@media (max-width:760px){.kpis{grid-template-columns:1fr}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--navy);border-radius:10px;padding:14px 18px}
+.kpi .lbl{font-size:14px;color:var(--muted)}
+.kpi .val{font-size:34px;font-weight:800;color:var(--navy);line-height:1.2;font-variant-numeric:tabular-nums}
+.kpi .val small{font-size:16px;font-weight:500;color:var(--ink-2)}
+.kpi .rep{display:flex;gap:6px;margin-top:4px}
+.kpi .rep span{min-width:46px;height:56px;padding:0 6px;border-radius:8px;display:grid;place-items:center;font-size:30px;font-weight:800;background:var(--navy);color:#fff}
+.kpi .rep span:nth-child(even){background:var(--gold);color:var(--navy)}
+.kpi .note{font-size:14px;color:var(--ink-2);margin-top:6px}
+.two{display:grid;grid-template-columns:1.25fr 1fr;gap:16px}
+@media (max-width:900px){.two{grid-template-columns:1fr}}
+.tgrid{display:grid;grid-template-columns:auto repeat(4,1fr);gap:4px}
+.tgrid .h{font-size:13px;color:var(--muted);text-align:center;align-self:end;padding-bottom:2px}
+.tgrid .rh{font-size:13px;color:var(--muted);width:2.4em;align-self:center;text-align:center;line-height:1.3}
+.cell{border-radius:6px;padding:10px 8px;text-align:center;min-height:78px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.cell .ty{font-weight:700;font-size:15px;letter-spacing:.04em}
+.cell .c{font-size:24px;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums}
+.cell .p{font-size:13px;opacity:.9}
+.cell.top1{box-shadow:inset 0 0 0 3px var(--gold)}
+.dimrow{display:grid;grid-template-columns:7.2em 1fr 7.2em;gap:10px;align-items:center;margin:10px 0}
+.dimrow .l{text-align:right}
+.dimrow .lab{font-weight:700;color:var(--navy)}
+.dimrow .num{font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.split{display:flex;height:26px;gap:2px}
+.split i{display:block;height:100%;border-radius:4px}
+.split i.a{background:var(--navy)}
+.split i.b{background:var(--gold)}
+.mid{position:relative}
+.mid::after{content:"";position:absolute;left:50%;top:-4px;bottom:-4px;border-left:1px dashed var(--muted)}
+.trend{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media (max-width:760px){.trend{grid-template-columns:1fr}}
+.mini h3{font-size:15px;color:var(--navy);margin-bottom:2px}
+.mini svg{width:100%;height:auto;display:block;overflow:visible}
+.mini .axis{font-size:11px;fill:var(--muted)}
+.mini .grid{stroke:var(--line-2);stroke-width:1}
+.mini .half{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4}
+.mini .ln{fill:none;stroke:var(--series-1);stroke-width:2}
+.mini .dot{fill:var(--series-1);stroke:var(--surface);stroke-width:2}
+.mini .dot.live{fill:var(--surface);stroke:var(--series-1);stroke-width:2}
+.mini .hit{fill:transparent}
+.mini .side{font-size:11px;fill:var(--ink-2);font-weight:600}
+.mini .vlab{font-size:11px;fill:var(--ink)}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;font-size:13px;border-radius:6px;padding:6px 10px;line-height:1.5;z-index:20;display:none;max-width:260px}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line-2);text-align:center}
+th{background:var(--navy-50);color:var(--navy);font-weight:600}
+td.l,th.l{text-align:left}
+tr.live td{background:var(--gold-100)}
+.wrap{overflow-x:auto}
+.empty{color:var(--muted);padding:20px;text-align:center}
+.err{color:#B3261E;padding:20px}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--ink-2);margin-top:6px;flex-wrap:wrap}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+body.present .private{display:none}
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="badge">SD5</span><span class="t">班級 MBTI 彙整｜老師後台</span>
+  <span class="meta" id="meta">讀取中…</span><span class="sp"></span>
+  <button id="btnPresent" aria-pressed="false" title="隱藏名單與組別明細，適合投影">公佈模式</button>
+  <button id="btnReload">重新整理</button>
+</header>
+<main id="app"><p class="empty">讀取資料中…</p></main>
+<div class="tip" id="tip"></div>
+
+<script>
+const ADMIN_KEY = "<?= adminKey ?>";
+const TYPE_ORDER = ['ISTJ','ISFJ','INFJ','INTJ','ISTP','ISFP','INFP','INTP','ESTP','ESFP','ENFP','ENTP','ESTJ','ESFJ','ENFJ','ENTJ'];
+const PAIRS = [['I','E','內向','外向'],['S','N','意會','直覺'],['T','F','思考','情感'],['J','P','判斷','知覺']];
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pct = (a,n)=> n? (a/n*100):0;
+const f1 = x=> (Math.round(x*10)/10).toFixed(1)+'%';
+
+function load(){
+  $('#meta').textContent='讀取中…';
+  if(window.google && google.script && google.script.run){
+    google.script.run.withSuccessHandler(render).withFailureHandler(e=>{$('#app').innerHTML=`<p class="err">讀取失敗：${esc(e.message||e)}</p>`}).getDashboardData(ADMIN_KEY);
+  } else if(window.MOCK_DATA){ render(window.MOCK_DATA); }
+}
+
+function repOf(d){ return PAIRS.map(([a,b])=> d[a]===d[b] ? a+'/'+b : (d[a]>d[b]?a:b)).join(''); }
+
+function render(D){
+  const C=D.current, n=C.n;
+  $('#meta').textContent=`${D.year} 年｜${n} 人已送出｜更新於 ${D.updated}`;
+  const last = D.history.length? D.history[D.history.length-1] : null;
+  const repLetters = C.representative.match(/[A-Z]\/[A-Z]|[A-Z]/g)||[];
+  const maxT = Math.max(1,...TYPE_ORDER.map(t=>C.types[t]));
+  const seq = c=>{ if(!c) return ['var(--line-2)','var(--muted)']; const k=Math.min(7,1+Math.floor((c/maxT)*6.999)); return [`var(--seq-${k})`, k>=4?'#fff':'var(--ink)']; };
+
+  // 16 型方格（與講義第 4 頁排列相同）
+  const rowsLab=['內向','內向','外向','外向'];
+  let grid='<div></div><div class="h">意會型</div><div class="h">意會型</div><div class="h">直覺型</div><div class="h">直覺型</div>';
+  for(let r=0;r<4;r++){
+    grid+=`<div class="rh">${rowsLab[r]}</div>`;
+    for(let c=0;c<4;c++){
+      const t=TYPE_ORDER[r*4+c], v=C.types[t], [bg,fg]=seq(v);
+      const lastP = last&&last.types ? `去年 ${f1(pct(last.types[t], Object.values(last.types).reduce((a,b)=>a+b,0)))}` : '';
+      grid+=`<div class="cell ${C.modal.includes(t)&&v?'top1':''}" style="background:${bg};color:${fg}" data-tip="${t}：${v} 人（${f1(pct(v,n))}）${lastP?'<br>'+lastP:''}">
+        <span class="ty">${t}</span><span class="c">${v}</span><span class="p">${n?f1(pct(v,n)):'—'}</span></div>`;
+    }
+  }
+
+  // 四構面
+  const dims = PAIRS.map(([a,b,an,bn])=>{
+    const x=C.dims[a], y=C.dims[b], tot=x+y||1;
+    return `<div class="dimrow"><div class="l"><span class="lab">${a} ${an}</span><br><span class="num">${x} 人・${f1(pct(x,tot))}</span></div>
+      <div class="mid"><div class="split" data-tip="${a} ${x} 人：${b} ${y} 人"><i class="a" style="flex:${x||0.0001}"></i><i class="b" style="flex:${y||0.0001}"></i></div></div>
+      <div><span class="lab">${b} ${bn}</span><br><span class="num">${y} 人・${f1(pct(y,tot))}</span></div></div>`;
+  }).join('');
+
+  // 趨勢資料：歷史 + 本年度（進行中）
+  const series = D.history.map(h=>({year:h.year,d:h,live:false})).concat(n?[{year:D.year,d:C.dims,live:true}]:[]);
+  const minis = PAIRS.map(p=>mini(series,p)).join('');
+
+  // 歷年表
+  const trows = series.map(s=>{
+    const d=s.d;
+    const cells = PAIRS.map(([a,b])=>{const t=d[a]+d[b]; return `<td>${d[a]}：${d[b]}</td><td>${f1(pct(d[a],t))}</td>`}).join('');
+    const nn = d.I+d.E;
+    return `<tr class="${s.live?'live':''}"><td>${s.year}${s.live?'（進行中）':''}</td><td>${nn}</td>${cells}<td><b>${repOf(d)}</b></td></tr>`;
+  }).join('');
+
+  // 組別
+  const gk = Object.keys(C.groups).sort((a,b)=>(parseFloat(a)||0)-(parseFloat(b)||0)||a.localeCompare(b));
+  const grows = gk.map(g=>{ const ts=C.groups[g]; const dd={}; 'IESNTFJP'.split('').forEach(k=>dd[k]=0); ts.forEach(t=>t.split('').forEach(ch=>dd[ch]++));
+    return `<tr><td>${esc(g)}</td><td>${ts.length}</td><td class="l">${ts.slice().sort().map(esc).join('、')}</td><td><b>${repOf(dd)}</b></td></tr>`; }).join('');
+  const roster = D.roster.slice().sort((a,b)=>a.sid.localeCompare(b.sid)).map(r=>`<tr><td>${esc(r.group)}</td><td>${esc(r.sid)}</td><td class="l">${esc(r.name)}</td><td><b>${r.type}</b></td><td class="l">${esc(r.tie)}</td></tr>`).join('');
+
+  $('#app').innerHTML = `
+  <section class="kpis">
+    <div class="kpi"><div class="lbl">班級代表型（四構面各取多數）</div>
+      <div class="rep">${repLetters.map(c=>`<span>${c}</span>`).join('')||'—'}</div>
+      <div class="note">${C.representative.includes('/')?'有構面人數相同，以「/」並列。':''}${last?` 去年（${last.year}）為 ${repOf(last)}。`:''}</div></div>
+    <div class="kpi"><div class="lbl">填答人數</div><div class="val">${n}<small> 人</small></div>
+      <div class="note">${C.ties?`${C.ties} 人有構面平手，已依第 11／16／24／23 題規則判定。`:'沒有平手個案。'}</div></div>
+    <div class="kpi"><div class="lbl">人數最多的類型</div><div class="val">${C.modal.length?C.modal.join('、'):'—'}</div>
+      <div class="note">${C.modalCount?`${C.modalCount} 人，占 ${f1(pct(C.modalCount,n))}`:''}</div></div>
+  </section>
+  <section class="two">
+    <div class="card"><h2>16 型分布</h2><p class="sub">排列與 SD5 第 4 頁相同；顏色越深人數越多，金框為人數最多的類型。</p>
+      ${n?`<div class="tgrid">${grid}</div>`:'<p class="empty">還沒有同學送出。</p>'}</div>
+    <div class="card"><h2>四個構面</h2><p class="sub">虛線為 50%，條狀左側為前一個字母。</p>${n?dims:'<p class="empty">還沒有同學送出。</p>'}
+      <div class="legend"><span><i style="background:var(--navy)"></i>I、S、T、J</span><span><i style="background:var(--gold)"></i>E、N、F、P</span></div></div>
+  </section>
+  <section class="card"><h2>2017 年以來的變化</h2><p class="sub">每張圖是該構面前一個字母的占比；高於 50% 虛線代表全班偏向該字母。空心點為本學期進行中的資料。</p>
+    <div class="trend">${minis}</div></section>
+  <section class="card"><h2>歷年數字</h2><p class="sub">2017–2025 取自 MBTI Class Results；2017 年 P 已依老師更正為 27 人。</p>
+    <div class="wrap"><table><thead><tr><th>年度</th><th>人數</th><th>I：E</th><th>I%</th><th>S：N</th><th>S%</th><th>T：F</th><th>T%</th><th>J：P</th><th>J%</th><th>代表型</th></tr></thead><tbody>${trows}</tbody></table></div></section>
+  <section class="card private"><h2>各組組成</h2><p class="sub">公佈模式下隱藏。</p>
+    ${gk.length?`<div class="wrap"><table><thead><tr><th>組別</th><th>人數</th><th class="l">成員類型</th><th>小組代表型</th></tr></thead><tbody>${grows}</tbody></table></div>`:'<p class="empty">尚無資料</p>'}</section>
+  <section class="card private"><h2>個人名單</h2><p class="sub">同一學號重複送出時只保留最後一次。公佈模式下隱藏。</p>
+    ${roster?`<div class="wrap"><table><thead><tr><th>組別</th><th>學號</th><th class="l">姓名</th><th>類型</th><th class="l">平手處理</th></tr></thead><tbody>${roster}</tbody></table></div>`:'<p class="empty">尚無資料</p>'}</section>`;
+  bindTips();
+}
+
+function mini(series,[a,b,an,bn]){
+  const W=520,H=210,ml=40,mr=16,mt=16,mb=28, iw=W-ml-mr, ih=H-mt-mb;
+  if(!series.length) return '';
+  const ys=series.map(s=>s.year), y0=Math.min(...ys), y1=Math.max(...ys);
+  const X=y=> ml + (y1===y0? iw/2 : (y-y0)/(y1-y0)*iw);
+  const Y=v=> mt + (1-v/100)*ih;
+  const pts=series.map(s=>{const t=s.d[a]+s.d[b]; return {year:s.year, v:pct(s.d[a],t), x:s.d[a], y:s.d[b], live:s.live};});
+  const hist=pts.filter(p=>!p.live), live=pts.find(p=>p.live);
+  const path=(arr)=>arr.map((p,i)=>(i?'L':'M')+X(p.year).toFixed(1)+','+Y(p.v).toFixed(1)).join('');
+  let g='';
+  [0,25,50,75,100].forEach(v=>{ g+= v===50? `<line class="half" x1="${ml}" x2="${W-mr}" y1="${Y(v)}" y2="${Y(v)}"/>` : `<line class="grid" x1="${ml}" x2="${W-mr}" y1="${Y(v)}" y2="${Y(v)}"/>`;
+    g+=`<text class="axis" x="${ml-6}" y="${Y(v)+4}" text-anchor="end">${v}%</text>`; });
+  ys.forEach(y=>{ g+=`<text class="axis" x="${X(y)}" y="${H-8}" text-anchor="middle">${String(y).slice(2)}</text>`; });
+  g+=`<path class="ln" d="${path(hist)}"/>`;
+  if(live && hist.length){ const lp=hist[hist.length-1]; g+=`<path class="ln" style="stroke-dasharray:4 3" d="M${X(lp.year)},${Y(lp.v)}L${X(live.year)},${Y(live.v)}"/>`; }
+  pts.forEach(p=>{ g+=`<circle class="dot ${p.live?'live':''}" cx="${X(p.year)}" cy="${Y(p.v)}" r="4.5"/>`; });
+  // 直接標示首尾數值
+  const lab=[pts[0],pts[pts.length-1]];
+  lab.forEach((p,i)=>{ g+=`<text class="vlab" x="${X(p.year)+(i?-2:2)}" y="${Y(p.v)-10}" text-anchor="${i?'end':'start'}">${f1(p.v)}</text>`; });
+  pts.forEach(p=>{ g+=`<rect class="hit" x="${X(p.year)-14}" y="${mt}" width="28" height="${ih}" data-tip="${p.year}${p.live?'（進行中）':''}<br>${a} ${p.x} 人：${b} ${p.y} 人<br>${a} 占 ${f1(p.v)}"/>`; });
+  return `<div class="mini"><h3>${a} ${an} 的占比（對 ${b} ${bn}）</h3><p class="sub" style="margin:0 0 4px;font-size:13px;color:var(--muted)">虛線以上偏 ${a}，以下偏 ${b}</p><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${a} 占比 ${pts.map(p=>p.year+' '+f1(p.v)).join('、')}">${g}</svg></div>`;
+}
+
+function bindTips(){
+  const tip=$('#tip');
+  document.querySelectorAll('[data-tip]').forEach(el=>{
+    el.addEventListener('mousemove',e=>{ tip.innerHTML=el.dataset.tip; tip.style.display='block';
+      const x=Math.min(e.clientX+14, innerWidth-tip.offsetWidth-8); tip.style.left=x+'px'; tip.style.top=(e.clientY+14)+'px'; });
+    el.addEventListener('mouseleave',()=>{tip.style.display='none'});
+  });
+}
+
+$('#btnReload').onclick=load;
+$('#btnPresent').onclick=e=>{ const on=document.body.classList.toggle('present'); e.target.setAttribute('aria-pressed',String(on)); };
+load();
+</script>
+</body>
+</html>
